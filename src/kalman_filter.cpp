@@ -1,72 +1,60 @@
 #include "kalman_filter.h"
 
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
-
 KalmanFilter::KalmanFilter() {
 }
 
 KalmanFilter::~KalmanFilter() {
 }
 
-void KalmanFilter::Predict() {
-  x_ = F_ * x_;
-  MatrixXd Ft = F_.transpose();
-  P_ = F_ * P_ * Ft + Q_;
+void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
+                        MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) {
+  x_ = x_in;  // state/position
+  P_ = P_in;  // state/position noise/covariance
+  F_ = F_in;  // state transition function, Process model matrix
+  H_ = H_in;  // Measurement function
+  R_ = R_in;  // process model noise/variance
+  Q_ = Q_in;  // sensor measurement noise/covariance
 }
 
-void KalmanFilter::Update(const VectorXd &z) {
-  /**
-   TODO:
-   * update the state by using Kalman Filter equations
-   */
-  VectorXd y = z - H_ * x_;
+void KalmanFilter::Predict() {
+  x_ = F_ * x_;     // prior
+  MatrixXd Ft = F_.transpose();
+  P_ = F_ * P_ * Ft + Q_;  // state variance
+}
 
+void KalmanFilter::Update(const VectorXd &z) {  // z is sensor measurement
+  VectorXd z_pred = H_ * x_;  // convert prior to measurement space
+
+  VectorXd y = z - z_pred;  // residual
   MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd S = H_ * P_ * Ht + R_;  // system uncertainty
   MatrixXd Si = S.inverse();
-  MatrixXd K = P_ * Ht * Si;
-
-  // New estimate
-  x_ = x_ + (K * y);
-  int x_size = x_.size();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;  // Kalman gain
+  x_ = x_ + (K * y);    // posterior
+  long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  P_ = (I - K * H_) * P_;  // posterior variance
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-   TODO:
-   * update the state by using Extended Kalman Filter equations
-   */
+  VectorXd hx(3);
   double px = x_(0);
   double py = x_(1);
   double vx = x_(2);
   double vy = x_(3);
+  hx << sqrt(px * px + py * py), atan(py / px), (px * vx + py * vy)
+      / sqrt(px * px + py * py);
+  VectorXd z_pred = hx;  // convert prior to measurement space
 
-  double rho = sqrt(px * px + py * py);
-  double theta = atan2(py, px);
-  double rho_dot = (px * vx + py * vy) / rho;
-  VectorXd h = VectorXd(3);
-  h << rho, theta, rho_dot;
-  VectorXd y = z - h;
-  while (y(1) > M_PI || y(1) < -M_PI) {
-    if (y(1) > M_PI) {
-      y(1) -= M_PI;
-    } else {
-      y(1) += M_PI;
-    }
-  }
-
+  VectorXd y = z - z_pred;  // residual
   MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd S = H_ * P_ * Ht + R_;  // system uncertainty
   MatrixXd Si = S.inverse();
-  MatrixXd K = P_ * Ht * Si;
-
-  // New estimate
-  x_ = x_ + (K * y);
-  int x_size = x_.size();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;  // Kalman gain
+  x_ = x_ + (K * y);    // posterior
+  long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  P_ = (I - K * H_) * P_;  // posterior variance
 }
-
