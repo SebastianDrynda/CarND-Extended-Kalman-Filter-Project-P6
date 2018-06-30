@@ -11,25 +11,25 @@ Tools::Tools() {
 Tools::~Tools() {
 }
 
+// This code is more or less the same as explained on the conferences.
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
                               const vector<VectorXd> &ground_truth) {
-
-  /**
-   TODO:
-   * Calculate the RMSE here.
-   */
   VectorXd rmse(4);
   rmse << 0, 0, 0, 0;
 
-  unsigned int n = estimations.size();
-
-  if (estimations.size() == 0 || ground_truth.size() == 0) {
-    cout
-        << "ERROR - CalculateRMSE () - The ground-truth or estimations vector is empty"
-        << endl;
+  if (estimations.size() == 0) {
+    cout << "ERROR - CalculateRMSE () - The estimations vector is empty"
+         << endl;
     return rmse;
   }
 
+  if (ground_truth.size() == 0) {
+    cout << "ERROR - CalculateRMSE () - The ground-truth vector is empty"
+         << endl;
+    return rmse;
+  }
+
+  unsigned int n = estimations.size();
   if (n != ground_truth.size()) {
     cout
         << "ERROR - CalculateRMSE () - The ground-truth and estimations vectors must have the same size."
@@ -37,14 +37,10 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
     return rmse;
   }
 
-  //accumulate squared residuals
   for (unsigned int i = 0; i < estimations.size(); ++i) {
-
-    VectorXd residual = estimations[i] - ground_truth[i];
-
-    //coefficient-wise multiplication
-    residual = residual.array() * residual.array();
-    rmse += residual;
+    VectorXd diff = estimations[i] - ground_truth[i];
+    diff = diff.array() * diff.array();
+    rmse += diff;
   }
 
   rmse = rmse / n;
@@ -52,11 +48,8 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
   return rmse;
 }
 
+// This code is more or less the same as explained on the conferences.
 MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
-  /**
-   TODO:
-   * Calculate a Jacobian here.
-   */
   MatrixXd Hj(3, 4);
 
   if (x_state.size() != 4) {

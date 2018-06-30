@@ -76,7 +76,6 @@ int main() {
                 iss >> timestamp;
                 meas_package.timestamp_ = timestamp;
               } else if (sensor_type.compare("R") == 0) {
-
                 meas_package.sensor_type_ = MeasurementPackage::RADAR;
                 meas_package.raw_measurements_ = VectorXd(3);
                 float ro;
@@ -122,7 +121,6 @@ int main() {
               estimate(3) = v2;
 
               estimations.push_back(estimate);
-
               VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
 
               json msgJson;
