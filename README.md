@@ -31,7 +31,7 @@ These are the suggested steps:
 - `make`: This will create an executable in the build directory
 - `./ExtendedKF` :  Execute EKF implementation.
 
-The CMakeLists.txt is also in the src folder for using in [Eclipse](ide_profiles/Eclipse/README.md).
+The CMakeLists.txt is also in the src folder for using in [Eclipse IDE](ide_profiles/Eclipse/README.md).
 
 The simulator provides two datasets. The difference between them are:
 
@@ -40,11 +40,11 @@ The simulator provides two datasets. The difference between them are:
 
 Here is the simulator final state after running the EKL with dataset 1:
 
-![Simulator with dataset 1](images/simulator_dataset_1.png)
+![Simulator with dataset 1](images/simulator_dataset_1.jpg)
 
 Here is the simulator final state after running the EKL with dataset 2:
 
-![Simulator with dataset 1](images/simulator_dataset_2.png)
+![Simulator with dataset 1](images/simulator_dataset_2.jpg)
 
 # [Rubric](https://review.udacity.com/#!/rubrics/748/view) points
 
@@ -88,38 +88,4 @@ Different type of measurements are handled in two places in [src/FusionEKF.cpp](
 ### Your algorithm should avoid unnecessary calculations.
 
 An example of this calculation optimization is when the Q matrix is calculated [src/FusionEKF.cpp](./src/FusionEKF.cpp#L141) line 131 to line 138.
-
-
-
-
-
-
-
-
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to ensure
-that students don't feel pressured to use one IDE or another.
-
-However! We'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Regardless of the IDE used, every submitted project must
-still be compilable with cmake and make.
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
