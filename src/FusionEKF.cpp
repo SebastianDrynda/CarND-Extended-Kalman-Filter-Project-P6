@@ -22,6 +22,8 @@ FusionEKF::FusionEKF() {
   H_laser_ = MatrixXd(2, 4);
   H_radar_ = MatrixXd(3, 4);
   Hj_ = MatrixXd(3, 4);
+  ekf_.P_ = MatrixXd(4, 4);
+  ekf_.F_ = MatrixXd(4, 4);
 
   /**
    * Finish initializing the FusionEKF.
@@ -34,6 +36,11 @@ FusionEKF::FusionEKF() {
   R_laser_ << 0.0225, 0, 0, 0.0225;
   R_radar_ << 0.09, 0, 0, 0, 0.0009, 0, 0, 0, 0.09;
 
+  // Init P state covariance matrix
+  ekf_.P_ << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000;
+
+  // Init F process model function
+  ekf_.F_ << 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1;
 }
 
 /**
@@ -91,13 +98,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
           .raw_measurements_[1], 0, 0;
     }
 
-    // Init P state covariance matrix
-    ekf_.P_ = MatrixXd(4, 4);
-    ekf_.P_ << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000;
-
-    // Init F process model function
-    ekf_.F_ = MatrixXd(4, 4);
-    ekf_.F_ << 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1;
 
     // Saving first timestamp in seconds
     previous_timestamp_ = measurement_pack.timestamp_;
